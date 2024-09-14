@@ -1,17 +1,23 @@
+import logo from "@/assets/IconKrist.svg";
+import { Link } from "react-router-dom";
+
 const ErrorPage = () => {
   return (
     <main>
       <div className="max-w-screen-xl mx-auto px-4 flex items-center justify-start h-screen md:px-8">
-        <div className="max-w-lg mx-auto space-y-3 text-center">
+        <div className="max-w-lg mx-auto space-y-3 text-center ">
+          <div className="flex items-center justify-center">
+            <img src={logo} alt="krist logo" className="" />
+          </div>
           <h3 className="text-gray-800 text-4xl font-semibold sm:text-5xl">
-            404 - Pagina no encontrada
+            Pagina no encontrada
           </h3>
           <p className="text-gray-600">
             Lo siento, la pagina que buscas no existe.
           </p>
-          <a
-            href="javascript:void(0)"
-            className="text-indigo-600 duration-150 hover:text-indigo-400 font-medium inline-flex items-center gap-x-1"
+          <Link
+            to={"/"}
+            className="text-black duration-150 hover:text-gray-400 font-medium inline-flex items-center gap-x-1 cursor-pointer"
           >
             Regresar
             <svg
@@ -26,7 +32,7 @@ const ErrorPage = () => {
                 clipRule="evenodd"
               />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
     </main>

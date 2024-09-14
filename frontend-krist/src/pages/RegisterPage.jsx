@@ -11,6 +11,7 @@ const RegisterPage = () => {
           src={image}
           alt="image left side person sitting on chair"
           className="w-full h-full object-cover"
+          loading="lazy"
         />
       </div>
       <div className="flex-[1] flex items-center justify-center ">
@@ -31,12 +32,12 @@ const RegisterPage = () => {
               nameLabel="Apellido"
             />
             <Input
-              type="text"
+              type="email"
               placeholder="Escribe tu correo electrónico"
               nameLabel="Correo electrónico"
             />
             <Input
-              type="text"
+              type="password"
               placeholder="Escribe tu contraseña"
               nameLabel="Contraseña"
             />

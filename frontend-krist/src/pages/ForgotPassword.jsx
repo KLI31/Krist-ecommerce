@@ -4,8 +4,22 @@ import image from "@/assets/image-forgotPassword.webp";
 import Button from "@/components/Button";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const ForgotPassword = () => {
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate("/otp", { state: { email } });
+  };
+
   return (
     <DividerScreen>
       <div className="flex-[2] flex items-center justify-center">
@@ -13,6 +27,9 @@ const ForgotPassword = () => {
           src={image}
           alt="Girl in a tree see you"
           className="w-full h-full object-cover"
+          width="100%"
+          height="100%"
+          loading="lazy"
         />
       </div>
       <div className="flex-[1] flex items-center justify-center">
@@ -34,11 +51,13 @@ const ForgotPassword = () => {
           </p>
           <form>
             <Input
-              type="text"
+              type="email"
+              value={email}
               placeholder="Escribe tu correo electrónico"
               nameLabel="Correo Electronico"
+              onChange={handleChange}
             />
-            <Button text="Enviar otp" />
+            <Button text="Enviar otp" onClick={handleSubmit} />
           </form>
         </div>
       </div>
