@@ -2,8 +2,29 @@ import DividerScreen from "@/components/DividerScreen";
 import image from "@/assets/image-register.webp";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
+  const {
+    register,
+    handleSubmit,
+    clearErrors,
+    formState: { errors },
+  } = useForm();
+
+  const navigate = useNavigate();
+
+  const onSubmit = (data) => {
+    if (data !== "") {
+      navigate("/otp");
+    }
+  };
+
+  const handleChange = (e) => {
+    clearErrors(e.target.name);
+  };
+
   return (
     <DividerScreen>
       <div className="flex-[2] flex justify-center items-center">
@@ -20,26 +41,57 @@ const RegisterPage = () => {
           <p className="mb-3 text-[#666]">
             Por favor escribe todos los detalles
           </p>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Input
               type="text"
               placeholder="Escribe tu nombre"
               nameLabel="Nombre"
+              name="nombre"
+              onChange={handleChange}
+              errors={errors}
+              {...register("nombre", {
+                required: {
+                  value: true,
+                  message: "El nombre es requerido",
+                },
+              })}
             />
             <Input
               type="text"
               placeholder="Escribe tu apellido"
               nameLabel="Apellido"
+              name="apellido"
+              {...register("apellido", { required: false })}
+              errors={errors}
             />
             <Input
               type="email"
               placeholder="Escribe tu correo electrónico"
               nameLabel="Correo electrónico"
+              name="email"
+              errors={errors}
+              onChange={handleChange}
+              {...register("email", {
+                required: "Correo electrónico requerido",
+                pattern: {
+                  value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+                  message: "Correo electrónico inválido",
+                },
+              })}
             />
             <Input
               type="password"
+              name="password"
               placeholder="Escribe tu contraseña"
               nameLabel="Contraseña"
+              onChange={handleChange}
+              {...register("password", {
+                required: {
+                  value: true,
+                  message: "La contraseña es requerida",
+                },
+              })}
+              errors={errors}
             />
 
             <div className="flex items-center mb-5">
