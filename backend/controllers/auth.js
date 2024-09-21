@@ -13,18 +13,26 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Credenciales incorrectas" });
+      return res.status(400).json({ message: "Informacion incorrecta" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Credenciales incorrectas" });
+      return res
+        .status(400)
+        .json({ message: "Contraseña Incorrecta, intente nuevamente" });
     }
 
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
     );
 
     res.status(200).json({
@@ -35,6 +43,7 @@ export const login = async (req, res) => {
         isAdmin: user.isAdmin,
         profilePic: user.profilePic,
         token,
+        refreshToken,
       },
     });
   } catch (error) {
@@ -45,7 +54,7 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { name, lastName, email, password, profilePic } = req.body;
+    const { name, lastName, isAdmin, email, password, profilePic } = req.body;
     const userExist = await User.findOne({ email });
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -59,6 +68,7 @@ export const register = async (req, res) => {
       name,
       lastName,
       email,
+      isAdmin,
       password: hashedPassword,
       profilePic,
     });
@@ -72,7 +82,7 @@ export const register = async (req, res) => {
     res.status(200).json({ token, user });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error en el servidor" });
+    res.status(500).json(error, { message: "Error en el servidor" });
   }
 };
 
