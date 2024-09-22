@@ -5,9 +5,14 @@ import RegisterPage from "@/pages/RegisterPage";
 import ErrorPage from "@/pages/404Page";
 import ForgotPassword from "@/pages/ForgotPassword";
 import LoginPage from "@/pages/LoginPage";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import DashBoardAdmin from "@/pages/DashBoardAdmin";
+import Layout from "@/pages/Layout";
+import ResetPassword from "@/pages/ResetPassword";
 
 export const routes = createBrowserRouter([
   {
+    element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -28,7 +33,27 @@ export const routes = createBrowserRouter([
       },
       {
         path: "/otp",
-        element: <OtpPage />,
+        element: (
+          <ProtectedRoute requireOtp={true}>
+            <OtpPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/reset-password",
+        element: (
+          <ProtectedRoute requireOtp={true}>
+            <ResetPassword />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/dashboard-admin",
+        element: (
+          <ProtectedRoute adminOnly={true} authRequired>
+            <DashBoardAdmin />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
