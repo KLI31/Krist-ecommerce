@@ -132,10 +132,33 @@ export const sendOtp = async (req, res) => {
   }
 };
 
-export const resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+export const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
 
-  if (!email || !otp || !newPassword) {
+  if (!otp || !email) {
+    return res.status(400).json({ message: "El OTP es requerido" });
+  }
+
+  try {
+    const isMatch = crypto.createHash("sha256").update(otp).digest("hex");
+    const existingOtp = await Otp.findOne({ email, otp: isMatch });
+    if (!existingOtp) {
+      return res.status(400).json({ message: "OTP incorrecto o expirado" });
+    }
+
+    existingOtp.isVerified = true;
+    await existingOtp.save();
+
+    res.status(200).json({ message: "OTP correcto" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
     return res.status(400).json({ message: "Todos los campos son requeridos" });
   }
 
@@ -145,21 +168,18 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "No se encontro un usuario" });
     }
 
-    const isMatch = crypto.createHash("sha256").update(otp).digest("hex");
-
-    const existingOtp = await Otp.findOne({ email, otp: isMatch });
-
+    const existingOtp = await Otp.findOne({ email, isVerified: true });
+    console.log(existingOtp);
     if (!existingOtp) {
-      return res.status(400).json({ message: "OTP incorrecto o expirado" });
+      return res.status(400).json({ message: "No se ha verificado el OTP" });
     }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     await User.updateOne({ email }, { password: hashedPassword });
     await Otp.deleteOne({ _id: existingOtp._id });
-
     res.status(200).json({ message: "Contraseña actualizada con éxito" });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };
